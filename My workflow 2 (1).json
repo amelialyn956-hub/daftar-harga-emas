@@ -1,0 +1,159 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -128,
+        0
+      ],
+      "id": "c35ae5f1-5098-4f6d-9282-b7dc03773670",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        48,
+        0
+      ],
+      "id": "3f7c9ac6-d636-4c92-9d1f-7a809a94524e",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "sendTo": "amelialyn956@gmail.com",
+        "subject": "Harga Emas Hari Ini",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "723b5416-7a37-40c5-b8b8-7704f89b8031",
+      "name": "Send a message",
+      "webhookId": "05841cfc-228d-41ed-a083-4db5eaf0983a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "eqWKSa2PMVAp2Ob3",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Kamu adalah analis emas profesional yang ramah.\n\nIni data harga emas hari ini dari API:\n{{ JSON. stringify ($json)}}\n\nTugas kamu:\n1. Baca harga PAX Gold (pax-gold) dari data di atas\n2. Jelaskan harga emas hari ini dalam Rupiah dan Dollar\n3. Kasih analisa: apakah sedang naik atau turun, dan rekomendasi beli / tahan / jual\n4. Gunakan bahasa Indonesia yang santai dan mudah dipahami\n\nJangan pernah bilang data tidak terbaca. Kalau ada data di atas, pakai data itu.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        272,
+        0
+      ],
+      "id": "033fc56c-9fb2-4c26-9329-9bc9c76ec892",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        144,
+        112
+      ],
+      "id": "cfc1af18-4072-4a11-a358-25a983b35f1f",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "75d35e1f-8449-43f2-80dd-a12352d777e5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "98d73ae16f266c10c35b090d02d0e180d93e76338b522dccb8361c80d1bddb44"
+  },
+  "nodeGroups": [],
+  "id": "6I8UDxGaJwiiu79Q",
+  "tags": []
+}
